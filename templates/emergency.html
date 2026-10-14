@@ -1,0 +1,247 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Information | SafeRoute AI</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f7fb;
+            color: #1e293b;
+        }
+
+        header {
+            background: #0f172a;
+            color: white;
+            padding: 20px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        header h2 {
+            margin: 0;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            background: #0d9488;
+            padding: 10px 16px;
+            border-radius: 8px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .intro {
+            background: #ccfbf1;
+            border-left: 5px solid #0d9488;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .emergency-number {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .emergency-number h2 {
+            color: #b91c1c;
+            margin-top: 0;
+        }
+
+        .number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #b91c1c;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.07);
+        }
+
+        .card h3 {
+            color: #0f766e;
+            margin-top: 0;
+        }
+
+        .card li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .checklist {
+            margin-top: 25px;
+        }
+
+        .checklist label {
+            display: block;
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 10px;
+            accent-color: #0d9488;
+        }
+
+        .warning {
+            margin-top: 25px;
+            padding: 18px;
+            background: #fef3c7;
+            border-radius: 10px;
+            line-height: 1.6;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #64748b;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h2>🛡️ SafeRoute AI</h2>
+        <a href="{{ url_for('dashboard') }}">← Back to Dashboard</a>
+    </header>
+
+    <main class="container">
+        <h1>Emergency Information</h1>
+        <p>Learn essential safety steps before, during, and after a disaster.</p>
+
+        <section class="intro">
+            <h3>Be prepared. Stay informed. Stay safe.</h3>
+            Keep your phone charged, know your evacuation options, and follow
+            instructions from official emergency authorities.
+        </section>
+
+        <section class="emergency-number">
+            <h2>🚨 Emergency Helpline — India</h2>
+            <div class="number">112</div>
+            <p>Call 112 for immediate assistance from emergency services in India.</p>
+        </section>
+
+        <section class="grid">
+            <article class="card">
+                <h3>🌊 Flood Safety</h3>
+                <ul>
+                    <li>Move to higher ground when flooding threatens.</li>
+                    <li>Never walk or drive through floodwater.</li>
+                    <li>Stay away from drains, rivers, and electrical wires.</li>
+                    <li>Switch off electricity only if it is safe to do so.</li>
+                    <li>Follow official evacuation instructions.</li>
+                </ul>
+            </article>
+
+            <article class="card">
+                <h3>🌍 Earthquake Safety</h3>
+                <ul>
+                    <li>Drop, cover, and hold on during shaking.</li>
+                    <li>Protect your head and neck under sturdy furniture.</li>
+                    <li>Stay away from windows and heavy objects.</li>
+                    <li>If outdoors, move away from buildings and power lines.</li>
+                    <li>Expect aftershocks and follow official guidance.</li>
+                </ul>
+            </article>
+
+            <article class="card">
+                <h3>🔥 Fire Safety</h3>
+                <ul>
+                    <li>Raise the alarm and leave using a safe exit.</li>
+                    <li>Use stairs, not elevators.</li>
+                    <li>Stay low under smoke if you must move through it.</li>
+                    <li>Never re-enter a burning building.</li>
+                    <li>Call emergency services from a safe location.</li>
+                </ul>
+            </article>
+
+            <article class="card">
+                <h3>⛰️ Landslide Safety</h3>
+                <ul>
+                    <li>Watch for official landslide warnings.</li>
+                    <li>Leave threatened slopes when authorities advise evacuation.</li>
+                    <li>Watch for cracks, falling rocks, or unusual ground movement.</li>
+                    <li>Stay away from landslide debris and unstable slopes.</li>
+                    <li>Do not cross blocked roads without official clearance.</li>
+                </ul>
+            </article>
+
+            <article class="card">
+                <h3>🌀 Cyclone Safety</h3>
+                <ul>
+                    <li>Follow weather alerts and evacuation orders.</li>
+                    <li>Secure loose outdoor objects before conditions worsen.</li>
+                    <li>Stay indoors, away from windows.</li>
+                    <li>Keep away from beaches and storm-surge areas.</li>
+                    <li>Do not go outside during a temporary lull in strong winds.</li>
+                </ul>
+            </article>
+
+            <article class="card">
+                <h3>📱 General Emergency Tips</h3>
+                <ul>
+                    <li>Share your location with trusted family members.</li>
+                    <li>Keep emergency contacts written down.</li>
+                    <li>Carry essential medicines and identification.</li>
+                    <li>Use a battery-powered radio if networks fail.</li>
+                    <li>Follow instructions from verified authorities.</li>
+                </ul>
+            </article>
+        </section>
+
+        <section class="card checklist">
+            <h2>🎒 Emergency Kit Checklist</h2>
+            <p>Tick items as you prepare your emergency bag.</p>
+
+            <label><input type="checkbox"> Drinking water</label>
+            <label><input type="checkbox"> Non-perishable food</label>
+            <label><input type="checkbox"> First-aid kit and essential medicines</label>
+            <label><input type="checkbox"> Torch and spare batteries</label>
+            <label><input type="checkbox"> Fully charged phone and power bank</label>
+            <label><input type="checkbox"> Copies of important documents in a waterproof bag</label>
+            <label><input type="checkbox"> Whistle and basic hygiene supplies</label>
+            <label><input type="checkbox"> Cash and emergency contact list</label>
+        </section>
+
+        <section class="warning">
+            <strong>Important:</strong> This page provides general preparedness
+            information. It does not provide live disaster alerts or guarantee
+            that a route or shelter is safe. During an actual emergency, follow
+            official instructions and contact emergency services.
+        </section>
+    </main>
+
+    <footer>
+        SafeRoute AI — Disaster Preparedness and Evacuation Support
+    </footer>
+</body>
+</html>

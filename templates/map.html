@@ -1,0 +1,834 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeRoute AI - Evacuation Map</title>
+
+    <!-- Leaflet map library -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b1120;
+            color: #f1f5f9;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 5%;
+            background: #111827;
+            border-bottom: 1px solid #273449;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            color: #5eead4;
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        .back-link {
+            color: #cbd5e1;
+            text-decoration: none;
+            border: 1px solid #475569;
+            padding: 9px 14px;
+            border-radius: 8px;
+        }
+
+        .back-link:hover {
+            background: #263449;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: auto;
+            padding: 28px 5%;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 320px minmax(0, 1fr);
+            gap: 22px;
+        }
+
+        .panel {
+            background: #111827;
+            border: 1px solid #273449;
+            border-radius: 14px;
+            padding: 22px;
+        }
+
+        .panel h2 {
+            font-size: 19px;
+            margin-bottom: 18px;
+        }
+
+        .field-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+            font-size: 14px;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+            background: #0b1120;
+            color: white;
+            margin-bottom: 18px;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            opacity: 0.88;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .primary-btn {
+            background: #14b8a6;
+            color: #062a28;
+        }
+
+        .secondary-btn {
+            background: #263449;
+            color: #e2e8f0;
+            border: 1px solid #475569;
+        }
+
+        .danger-btn {
+            background: #3b1e2a;
+            color: #fecaca;
+            border: 1px solid #7f1d1d;
+        }
+
+        .legend {
+            margin-top: 12px;
+            border-top: 1px solid #273449;
+            padding-top: 16px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #cbd5e1;
+            font-size: 14px;
+            margin: 12px 0;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .blue {
+            background: #38bdf8;
+        }
+
+        .red {
+            background: #ef4444;
+        }
+
+        .green {
+            background: #22c55e;
+        }
+
+        .purple {
+            background: #a78bfa;
+        }
+
+        .instructions {
+            margin-top: 18px;
+            color: #94a3b8;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .map-panel {
+            padding: 12px;
+            min-width: 0;
+        }
+
+        #map {
+            width: 100%;
+            height: 620px;
+            border-radius: 10px;
+            background: #1e293b;
+        }
+
+        #mapStatus {
+            margin-top: 14px;
+            padding: 14px;
+            border-radius: 8px;
+            background: #172337;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            line-height: 1.6;
+            font-size: 14px;
+            overflow-wrap: anywhere;
+        }
+
+        .warning {
+            margin-top: 18px;
+            padding: 14px;
+            background: #332719;
+            border: 1px solid #854d0e;
+            border-radius: 9px;
+            color: #fde68a;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 850px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            #map {
+                height: 450px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="navbar">
+        <div class="brand">SafeRoute AI</div>
+        <a class="back-link" href="{{ url_for('dashboard') }}">
+            ← Back to Dashboard
+        </a>
+    </header>
+
+    <main class="container">
+        <h1>Disaster Evacuation Planner</h1>
+
+        <p class="subtitle">
+            Select your starting point, mark a reported disaster, choose a
+            destination, and calculate a candidate driving route.
+        </p>
+
+        <div class="layout">
+
+            <!-- Control panel -->
+            <section class="panel">
+                <h2>Plan Your Route</h2>
+
+                <label class="field-label" for="selectionMode">
+                    Select what to mark on the map
+                </label>
+
+                <select id="selectionMode">
+                    <option value="start">Starting Point</option>
+                    <option value="disaster">Disaster Location</option>
+                    <option value="destination">Destination</option>
+                </select>
+
+                <button id="locationButton" class="secondary-btn">
+                    📍 Use My Current Location
+                </button>
+
+                <button id="routeButton" class="primary-btn">
+                    Calculate Route →
+                </button>
+
+                <button id="resetButton" class="danger-btn">
+                    Reset Map
+                </button>
+
+                <div class="legend">
+                    <h2>Map Legend</h2>
+
+                    <div class="legend-item">
+                        <span class="dot blue"></span>
+                        Starting point
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="dot red"></span>
+                        Reported disaster
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="dot green"></span>
+                        Selected destination
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="dot purple"></span>
+                        Candidate driving route
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <strong>How to use:</strong>
+                    <ol style="padding-left: 20px; margin-top: 8px;">
+                        <li>Select Starting Point and click the map.</li>
+                        <li>Select Disaster Location and click the map.</li>
+                        <li>Select Destination and click the map.</li>
+                        <li>Click Calculate Route.</li>
+                    </ol>
+                    <p style="margin-top: 10px;">
+                        The red circle represents a configurable 500-metre
+                        exclusion radius around the marked disaster.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Map and status -->
+            <section class="panel map-panel">
+                <div id="map"></div>
+
+                <div id="mapStatus" role="status" aria-live="polite">
+                    Select a starting point on the map to begin.
+                </div>
+
+                <div class="warning">
+                    <strong>Safety notice:</strong> This is a prototype.
+                    Disaster locations are manually entered, and route
+                    avoidance is only a basic estimate. Roads may be blocked,
+                    hazards may change, and the selected destination is not
+                    verified as a shelter. Always follow official emergency
+                    service instructions.
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // ---------------------------------------------
+        // 1. Map setup
+        // ---------------------------------------------
+
+        const map = L.map("map").setView([20.5937, 78.9629], 5);
+
+        L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+                attribution: "&copy; OpenStreetMap contributors",
+                maxZoom: 19
+            }
+        ).addTo(map);
+
+        // ---------------------------------------------
+        // 2. Application variables
+        // ---------------------------------------------
+
+        let startPoint = null;
+        let disasterPoint = null;
+        let destinationPoint = null;
+
+        let startMarker = null;
+        let disasterMarker = null;
+        let destinationMarker = null;
+
+        let routeLayer = null;
+        let hazardRadiusLayer = null;
+
+        // Demonstration setting only; not an official safety standard.
+        const HAZARD_RADIUS_METERS = 100;
+
+        const statusBox = document.getElementById("mapStatus");
+        const selectionMode = document.getElementById("selectionMode");
+        const routeButton = document.getElementById("routeButton");
+
+        function setStatus(message) {
+            statusBox.textContent = message;
+        }
+
+        // ---------------------------------------------
+        // 3. Create map markers
+        // ---------------------------------------------
+
+        function addMarker(point, color, label) {
+            return L.circleMarker(point, {
+                radius: 9,
+                color: "#ffffff",
+                weight: 2,
+                fillColor: color,
+                fillOpacity: 1
+            })
+            .addTo(map)
+            .bindPopup(label);
+        }
+
+        function removeRoute() {
+            if (routeLayer) {
+                map.removeLayer(routeLayer);
+                routeLayer = null;
+            }
+        }
+
+        // ---------------------------------------------
+        // 4. Check if a route passes near a hazard
+        // ---------------------------------------------
+
+        function routePassesNearHazard(route, hazard, radiusMeters) {
+            if (!hazard) {
+                return false;
+            }
+
+            const coordinates = route.geometry.coordinates;
+
+            if (!coordinates || coordinates.length === 0) {
+                return true;
+            }
+
+            // Check points along each route segment, not just the
+            // vertices returned by the routing service.
+            for (let i = 0; i < coordinates.length; i++) {
+                const [longitude, latitude] = coordinates[i];
+                const routePoint = L.latLng(latitude, longitude);
+
+                if (routePoint.distanceTo(hazard) < radiusMeters) {
+                    return true;
+                }
+
+                if (i === 0) {
+                    continue;
+                }
+
+                const [previousLongitude, previousLatitude] =
+                    coordinates[i - 1];
+
+                const previousPoint = L.latLng(
+                    previousLatitude,
+                    previousLongitude
+                );
+
+                const segmentDistance =
+                    previousPoint.distanceTo(routePoint);
+
+                // Sample approximately every 50 metres.
+                const sampleCount = Math.max(
+                    1,
+                    Math.ceil(segmentDistance / 50)
+                );
+
+                for (let j = 1; j < sampleCount; j++) {
+                    const fraction = j / sampleCount;
+
+                    const sampleLatitude =
+                        previousLatitude +
+                        (latitude - previousLatitude) * fraction;
+
+                    const sampleLongitude =
+                        previousLongitude +
+                        (longitude - previousLongitude) * fraction;
+
+                    const samplePoint = L.latLng(
+                        sampleLatitude,
+                        sampleLongitude
+                    );
+
+                    if (
+                        samplePoint.distanceTo(hazard) < radiusMeters
+                    ) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        // ---------------------------------------------
+        // 5. Select points by clicking the map
+        // ---------------------------------------------
+
+        map.on("click", function (event) {
+            const point = event.latlng;
+            const mode = selectionMode.value;
+
+            // A changed point invalidates the previously drawn route.
+            removeRoute();
+
+            if (mode === "start") {
+                startPoint = point;
+
+                if (startMarker) {
+                    map.removeLayer(startMarker);
+                }
+
+                startMarker = addMarker(
+                    point,
+                    "#38bdf8",
+                    "Starting Point"
+                );
+
+                setStatus(
+                    "Starting point selected. Mark the disaster location " +
+                    "and destination."
+                );
+
+            } else if (mode === "disaster") {
+                disasterPoint = point;
+
+                if (disasterMarker) {
+                    map.removeLayer(disasterMarker);
+                }
+
+                if (hazardRadiusLayer) {
+                    map.removeLayer(hazardRadiusLayer);
+                }
+
+                disasterMarker = addMarker(
+                    point,
+                    "#ef4444",
+                    "Reported Disaster"
+                );
+
+                hazardRadiusLayer = L.circle(point, {
+                    radius: HAZARD_RADIUS_METERS,
+                    color: "#ef4444",
+                    weight: 2,
+                    fillColor: "#ef4444",
+                    fillOpacity: 0.15
+                }).addTo(map);
+
+                setStatus(
+                    "Disaster location marked. The red circle shows the " +
+                    "estimated " + HAZARD_RADIUS_METERS +
+                    "-metre exclusion radius."
+                );
+
+            } else if (mode === "destination") {
+                destinationPoint = point;
+
+                if (destinationMarker) {
+                    map.removeLayer(destinationMarker);
+                }
+
+                destinationMarker = addMarker(
+                    point,
+                    "#22c55e",
+                    "User-selected Destination (not verified)"
+                );
+
+                setStatus(
+                    "Destination selected. Click Calculate Route to " +
+                    "check the available driving routes."
+                );
+            }
+        });
+
+        // ---------------------------------------------
+        // 6. Use current location
+        // ---------------------------------------------
+
+        document
+            .getElementById("locationButton")
+            .addEventListener("click", function () {
+                if (!navigator.geolocation) {
+                    setStatus(
+                        "Geolocation is not supported by this browser. " +
+                        "Select your starting point manually."
+                    );
+                    return;
+                }
+
+                setStatus("Getting your current location...");
+
+                navigator.geolocation.getCurrentPosition(
+                    function (position) {
+                        const point = L.latLng(
+                            position.coords.latitude,
+                            position.coords.longitude
+                        );
+
+                        startPoint = point;
+
+                        if (startMarker) {
+                            map.removeLayer(startMarker);
+                        }
+
+                        removeRoute();
+
+                        startMarker = addMarker(
+                            point,
+                            "#38bdf8",
+                            "Your Current Location"
+                        );
+
+                        map.setView(point, 15);
+
+                        selectionMode.value = "start";
+
+                        setStatus(
+                            "Your location has been selected as the " +
+                            "starting point. Now mark the disaster and " +
+                            "destination."
+                        );
+                    },
+
+                    function (error) {
+                        let message =
+                            "Unable to get your location. Select a point " +
+                            "on the map instead.";
+
+                        if (error.code === 1) {
+                            message =
+                                "Location permission was denied. Allow " +
+                                "location access in your browser or select " +
+                                "your starting point manually.";
+                        } else if (error.code === 3) {
+                            message =
+                                "Getting your location timed out. Try again " +
+                                "or select your starting point manually.";
+                        }
+
+                        setStatus(message);
+                    },
+
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 15000,
+                        maximumAge: 0
+                    }
+                );
+            });
+
+        // ---------------------------------------------
+        // 7. Calculate a candidate driving route
+        // ---------------------------------------------
+
+        routeButton.addEventListener("click", async function () {
+            if (!startPoint || !destinationPoint) {
+                setStatus(
+                    "Please select both a starting point and a destination."
+                );
+                return;
+            }
+
+            // A marked hazard near the start or destination needs attention.
+            if (
+                disasterPoint &&
+                startPoint.distanceTo(disasterPoint) <
+                    HAZARD_RADIUS_METERS
+            ) {
+                setStatus(
+                    "Your starting point is inside the estimated hazard " +
+                    "zone. This planner cannot determine a safe escape. " +
+                    "Follow emergency-service instructions."
+                );
+                return;
+            }
+
+            if (
+                disasterPoint &&
+                destinationPoint.distanceTo(disasterPoint) <
+                    HAZARD_RADIUS_METERS
+            ) {
+                setStatus(
+                    "Your selected destination is inside the estimated " +
+                    "hazard zone. Choose another destination and follow " +
+                    "official emergency guidance."
+                );
+                return;
+            }
+
+            routeButton.disabled = true;
+            routeButton.textContent = "Checking Routes...";
+
+            setStatus(
+                "Requesting available driving routes and checking them " +
+                "against the marked hazard..."
+            );
+
+            try {
+                const coordinates =
+                    `${startPoint.lng},${startPoint.lat};` +
+                    `${destinationPoint.lng},${destinationPoint.lat}`;
+
+                const url =
+                    "https://router.project-osrm.org/route/v1/driving/" +
+                    coordinates +
+                    "?overview=full&geometries=geojson&alternatives=true";
+
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(
+                        "The routing service is unavailable."
+                    );
+                }
+
+                const data = await response.json();
+
+                if (data.code !== "Ok" || !data.routes?.length) {
+                    throw new Error(
+                        "No driving route was found between these points."
+                    );
+                }
+
+                // Examine the alternatives returned by OSRM.
+                // This does not generate every possible road route.
+                const candidates = [...data.routes].sort(
+                    (a, b) => a.distance - b.distance
+                );
+
+                const acceptableRoutes = candidates.filter(function (route) {
+                    return !routePassesNearHazard(
+                        route,
+                        disasterPoint,
+                        HAZARD_RADIUS_METERS
+                    );
+                });
+
+                removeRoute();
+
+                if (acceptableRoutes.length === 0) {
+                    setStatus(
+                        "No route among the alternatives returned by the " +
+                        "routing service passed the marked-hazard check. " +
+                        "This does not mean every possible route is blocked. " +
+                        "Do not rely on this planner for emergency decisions."
+                    );
+                    return;
+                }
+
+                // Choose the shortest route among the alternatives
+                // that pass the prototype's hazard check.
+                const chosenRoute = acceptableRoutes[0];
+
+                routeLayer = L.geoJSON(chosenRoute.geometry, {
+                    style: {
+                        color: "#a78bfa",
+                        weight: 6,
+                        opacity: 0.9
+                    }
+                }).addTo(map);
+
+                map.fitBounds(routeLayer.getBounds(), {
+                    padding: [30, 30]
+                });
+
+                const distanceKm =
+                    (chosenRoute.distance / 1000).toFixed(2);
+
+                const durationMinutes =
+                    Math.round(chosenRoute.duration / 60);
+
+                setStatus(
+                    "Candidate route displayed. Distance: " +
+                    distanceKm + " km. Estimated driving time: " +
+                    durationMinutes + " minutes. " +
+                    "The route passed the check against the one manually " +
+                    "marked hazard among the alternatives returned by the " +
+                    "routing service. Road conditions and destination safety " +
+                    "have not been verified."
+                );
+
+            } catch (error) {
+                setStatus(
+                    error.message +
+                    " Check your internet connection and try again."
+                );
+
+            } finally {
+                routeButton.disabled = false;
+                routeButton.textContent = "Calculate Route →";
+            }
+        });
+
+        // ---------------------------------------------
+        // 8. Reset the map
+        // ---------------------------------------------
+
+        document
+            .getElementById("resetButton")
+            .addEventListener("click", function () {
+                if (startMarker) {
+                    map.removeLayer(startMarker);
+                }
+
+                if (disasterMarker) {
+                    map.removeLayer(disasterMarker);
+                }
+
+                if (destinationMarker) {
+                    map.removeLayer(destinationMarker);
+                }
+
+                if (hazardRadiusLayer) {
+                    map.removeLayer(hazardRadiusLayer);
+                }
+
+                removeRoute();
+
+                startPoint = null;
+                disasterPoint = null;
+                destinationPoint = null;
+
+                startMarker = null;
+                disasterMarker = null;
+                destinationMarker = null;
+                hazardRadiusLayer = null;
+
+                selectionMode.value = "start";
+
+                map.setView([20.5937, 78.9629], 5);
+
+                setStatus(
+                    "Map reset. Select a new starting point to begin."
+                );
+            });
+    </script>
+
+</body>
+</html>

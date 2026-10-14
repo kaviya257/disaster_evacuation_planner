@@ -1,0 +1,378 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeRoute AI - Emergency Chatbot</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b1120;
+            color: #f1f5f9;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #111827;
+            padding: 18px 5%;
+            border-bottom: 1px solid #273449;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand {
+            color: #5eead4;
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        header a {
+            color: #cbd5e1;
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 35px auto;
+            padding: 0 18px;
+        }
+
+        h1 {
+            font-size: 27px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 22px;
+        }
+
+        .chat-card {
+            background: #111827;
+            border: 1px solid #273449;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 18px;
+            border-bottom: 1px solid #273449;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .bot-icon {
+            width: 43px;
+            height: 43px;
+            border-radius: 50%;
+            background: #134e4a;
+            color: #5eead4;
+            display: grid;
+            place-items: center;
+            font-size: 22px;
+        }
+
+        .bot-info h2 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .online {
+            font-size: 12px;
+            color: #5eead4;
+        }
+
+        #chatMessages {
+            height: 390px;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 13px 15px;
+            border-radius: 12px;
+            line-height: 1.65;
+            font-size: 14px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .bot-message {
+            background: #1e293b;
+            color: #e2e8f0;
+            align-self: flex-start;
+            border-bottom-left-radius: 3px;
+        }
+
+        .user-message {
+            background: #115e59;
+            color: #f0fdfa;
+            align-self: flex-end;
+            border-bottom-right-radius: 3px;
+        }
+
+        .suggestions {
+            display: flex;
+            gap: 8px;
+            padding: 0 18px 16px;
+            flex-wrap: wrap;
+        }
+
+        .suggestions button {
+            background: #172337;
+            color: #99f6e4;
+            border: 1px solid #335b62;
+            border-radius: 20px;
+            padding: 9px 12px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+            padding: 16px;
+            border-top: 1px solid #273449;
+        }
+
+        #userInput {
+            flex: 1;
+            min-width: 0;
+            background: #0b1120;
+            color: white;
+            border: 1px solid #475569;
+            border-radius: 9px;
+            padding: 13px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        #userInput:focus {
+            border-color: #2dd4bf;
+        }
+
+        #sendButton {
+            background: #14b8a6;
+            color: #042f2e;
+            border: none;
+            border-radius: 9px;
+            padding: 0 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #sendButton:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .notice {
+            margin-top: 18px;
+            padding: 14px;
+            background: #332719;
+            border: 1px solid #854d0e;
+            color: #fde68a;
+            border-radius: 9px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 500px) {
+            .message {
+                max-width: 95%;
+            }
+
+            #chatMessages {
+                height: 350px;
+            }
+
+            #sendButton {
+                padding: 0 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="brand">SafeRoute AI</div>
+    <a href="{{ url_for('dashboard') }}">← Dashboard</a>
+</header>
+
+<main class="container">
+    <h1>Emergency Assistant</h1>
+
+    <p class="subtitle">
+        Ask questions about disaster preparedness, emergency kits,
+        evacuation, and basic safety procedures.
+    </p>
+
+    <section class="chat-card">
+        <div class="chat-header">
+            <div class="bot-icon">✦</div>
+            <div class="bot-info">
+                <h2>SafeRoute Assistant</h2>
+                <div class="online">Emergency information assistant</div>
+            </div>
+        </div>
+
+        <div id="chatMessages" aria-live="polite">
+            <div class="message bot-message">Hello! I'm the SafeRoute AI emergency assistant.
+
+I can help with:
+• Flood safety
+• Fire safety
+• Earthquake safety
+• Emergency kits
+• Evacuation preparation
+
+What would you like to know?</div>
+        </div>
+
+        <div class="suggestions">
+            <button type="button" data-question="What should I do during a flood?">
+                Flood safety
+            </button>
+
+            <button type="button" data-question="What should I do during an earthquake?">
+                Earthquake safety
+            </button>
+
+            <button type="button" data-question="What should an emergency kit contain?">
+                Emergency kit
+            </button>
+
+            <button type="button" data-question="How do I prepare to evacuate?">
+                Evacuation tips
+            </button>
+        </div>
+
+        <form class="input-area" id="chatForm">
+            <input
+                id="userInput"
+                type="text"
+                placeholder="Ask your emergency question..."
+                autocomplete="off"
+                maxlength="1000"
+                required
+            >
+
+            <button id="sendButton" type="submit">Send</button>
+        </form>
+    </section>
+
+    <div class="notice">
+        <strong>Important:</strong> This assistant provides general
+        information and is not a live emergency service. During an actual
+        emergency, contact local emergency services and follow official
+        instructions. In India, dial 112 for emergency assistance.
+    </div>
+</main>
+
+<script>
+    const chatMessages = document.getElementById("chatMessages");
+    const chatForm = document.getElementById("chatForm");
+    const userInput = document.getElementById("userInput");
+    const sendButton = document.getElementById("sendButton");
+
+    function addMessage(text, sender) {
+        const message = document.createElement("div");
+
+        message.className =
+            "message " +
+            (sender === "user" ? "user-message" : "bot-message");
+
+        // textContent prevents user or server text from being interpreted as HTML.
+        message.textContent = text;
+
+        chatMessages.appendChild(message);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        return message;
+    }
+
+    async function sendMessage(question) {
+        question = question.trim();
+
+        if (!question || sendButton.disabled) {
+            return;
+        }
+
+        addMessage(question, "user");
+        userInput.value = "";
+        sendButton.disabled = true;
+        sendButton.textContent = "...";
+
+        const loadingMessage = addMessage(
+            "Preparing your response...",
+            "bot"
+        );
+
+        try {
+            const response = await fetch(
+                "{{ url_for('chatbot_reply') }}",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        message: question
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.reply || "Unable to get a response."
+                );
+            }
+
+            loadingMessage.textContent = data.reply;
+
+        } catch (error) {
+            loadingMessage.textContent =
+                "Sorry, I couldn't process your question. " +
+                "Please check that the Flask server is running and try again.";
+        } finally {
+            sendButton.disabled = false;
+            sendButton.textContent = "Send";
+            userInput.focus();
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    }
+
+    chatForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        sendMessage(userInput.value);
+    });
+
+    document.querySelectorAll(".suggestions button").forEach(function (button) {
+        button.addEventListener("click", function () {
+            sendMessage(button.dataset.question);
+        });
+    });
+</script>
+
+</body>
+</html>
+```

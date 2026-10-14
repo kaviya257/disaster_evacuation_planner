@@ -1,0 +1,8 @@
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.env
+saferoute.db
+instance/
+.pytest_cache/

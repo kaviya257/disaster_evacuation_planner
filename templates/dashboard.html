@@ -1,0 +1,117 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | SafeRoute AI</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <header class="dashboard-header">
+        <a class="brand" href="{{ url_for('dashboard') }}">
+            <span class="brand-icon">✦</span>
+            <span>SafeRoute <span class="brand-accent">AI</span></span>
+        </a>
+
+        <form action="{{ url_for('logout') }}" method="POST">
+            <button class="logout-button" type="submit">
+                Log out ↗
+            </button>
+        </form>
+    </header>
+
+    <main class="dashboard-main">
+        <p class="eyebrow">DISASTER RESPONSE • SMARTER SAFETY</p>
+
+        <h1>Welcome, {{ user_name }}.</h1>
+
+        <p class="subtitle">
+            Your emergency planning workspace. Prepare now, respond smarter.
+        </p>
+
+        <section class="feature-grid">
+
+            <!-- Evacuation Map -->
+            <a class="feature-card featured-card"
+               href="{{ url_for('evacuation_map') }}">
+
+                <span class="feature-icon">⌖</span>
+
+                <p class="feature-label">01 / EVACUATION</p>
+
+                <h2>Plan a Safe Route</h2>
+
+                <p>
+                    Mark a disaster location and explore safer
+                    evacuation options.
+                </p>
+
+                <span class="feature-link">
+                    Open route planner →
+                </span>
+            </a>
+
+            <!-- Emergency Chatbot -->
+            <a class="feature-card"
+               href="{{ url_for('chatbot') }}">
+
+                <span class="feature-icon">✧</span>
+
+                <p class="feature-label">02 / AI ASSISTANT</p>
+
+                <h2>Emergency Chatbot</h2>
+
+                <p>
+                    Get practical guidance about disasters,
+                    emergency kits, and evacuation preparation.
+                </p>
+
+                <span class="feature-link">
+                    Ask for guidance →
+                </span>
+            </a>
+
+            <!-- Emergency Information -->
+            <a class="feature-card" href="{{ url_for('emergency') }}">
+
+                <span class="feature-icon">◎</span>
+
+                <p class="feature-label">03 / RESOURCES</p>
+
+                <h2>Emergency Information</h2>
+
+                <p>
+                    Learn about emergency contacts, shelters,
+                    and safety precautions.
+                </p>
+
+                <span class="feature-link">
+                    Explore resources →
+                </span>
+            </a>
+
+        </section>
+
+        <!-- Emergency Notice -->
+        <section class="notice-card">
+            <span class="notice-symbol">!</span>
+
+            <div>
+                <h3>In immediate danger?</h3>
+
+                <p>
+                    Contact local emergency services and follow
+                    instructions from emergency responders.
+                    This prototype does not provide verified live
+                    hazard information.
+                </p>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
+```
