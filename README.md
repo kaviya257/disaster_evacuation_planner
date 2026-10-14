@@ -14,6 +14,40 @@
 - **Input Validation:** Validates registration details, password length, and chatbot input.
 - **Emergency Keyword Detection:** Recognizes selected urgent phrases and advises users to contact emergency services.
 
+ ## 📸 Screenshots
+
+Explore the different screens of the SafeRoute AI Disaster Evacuation Planner.
+
+> **Note:** Replace the example filenames below with the exact image filenames present in the `Outputs` folder.
+
+### 🔐 Login Page
+
+![Login Page](Outputs/login.png)
+
+### 📝 Registration Page
+
+![Registration Page](Outputs/register.png)
+
+### 🏠 Dashboard
+
+![Dashboard](Outputs/dashboard.png)
+
+### 🗺️ Evacuation Map
+
+![Evacuation Map](Outputs/map.png)
+
+### 💬 Emergency Chatbot
+
+![Emergency Chatbot](Outputs/chatbot.png)
+
+### 🚨 Emergency Assistance
+
+![Emergency Assistance](Outputs/emergency.png)
+
+---
+
+📂 [View all screenshots in the Outputs folder](https://github.com/kaviya257/disaster_evacuation_planner/tree/main/Outputs)
+
 ## 🛠️ Tech Stack
 
 - **Backend:** Python, Flask
