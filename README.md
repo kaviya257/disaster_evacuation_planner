@@ -22,31 +22,34 @@ Explore the different screens of the SafeRoute AI Disaster Evacuation Planner.
 
 ### 🔐 Login Page
 
-![Login Page](Outputs/login.png)
+## 📸 Screenshots
+
+Explore the different screens of the **SafeRoute AI Disaster Evacuation Planner**.
+
+### 🔐 Login Page
+![Login Page](Outputs/Login.png)
 
 ### 📝 Registration Page
-
-![Registration Page](Outputs/register.png)
+![Registration Page](Outputs/Register.png)
 
 ### 🏠 Dashboard
-
-![Dashboard](Outputs/dashboard.png)
-
-### 🗺️ Evacuation Map
-
-![Evacuation Map](Outputs/map.png)
+![Dashboard](Outputs/Dashboard.png)
 
 ### 💬 Emergency Chatbot
+![Emergency Chatbot](Outputs/Emergency_chatbot.png)
 
-![Emergency Chatbot](Outputs/chatbot.png)
+### 🚨 Emergency Information
+![Emergency Information](Outputs/emergency_information.png)
 
-### 🚨 Emergency Assistance
+### 🗺️ Evacuation Map – Route Planning
+![Evacuation Map](Outputs/map_2.png)
 
-![Emergency Assistance](Outputs/emergency.png)
+### ⚠️ Evacuation Map – Disaster and Source/Destination
+![Disaster Source and Destination Map](Outputs/map_dest_src_disaster.png)
 
 ---
 
-📂 [View all screenshots in the Outputs folder](https://github.com/kaviya257/disaster_evacuation_planner/tree/main/Outputs)
+📂 [View all screenshots](https://github.com/kaviya257/disaster_evacuation_planner/tree/main/Outputs)
 
 ## 🛠️ Tech Stack
 
